@@ -53,15 +53,15 @@ export default {
   },
   computed: {
     isLoading() {
-      return false;
+      return this.$store.state.isLoading;
     },
     playername()
     {
-      return '';
+      return this.$store.state.scores.playerOne.name;
     },
     playerphone()
     {
-      return '';
+      return this.$store.state.scores.playerOne.phone;
     }
   },
   methods: {
@@ -88,6 +88,10 @@ export default {
     
         console.log('Player Name:', playerName);
         console.log('Player Phone:', playerPhone);
+
+        this.pauseGame(); 
+        this.playerClickedCard = false; 
+        this.setResults = false; 
 
         } else {
             

@@ -60,12 +60,13 @@
 
 <script>
 export default{
-    computed: {
+    computed: {        
         showLeaveButton() {
-        return false;
+        return this.$store.state.isGameOver;
+        
         },
         leaderBoardState() {
-        return false;
+        return this.$store.state.leaderBoard;
     }
     },
     data(){
@@ -84,7 +85,7 @@ export default{
     methods: {
         play (audio) {
             audio[0].isPlaying = true;
-            audio[0].file.play();
+            audio[0].file.play();           
         },
 
         pause (audio) {
