@@ -1,7 +1,9 @@
 <template>
     
         <div class="register-player">
-            <label :for="`input-${label}-id`">{{ label }}</label>
+            <img :src="logo" style="max-width: 200px; max-height: 139px;  width: auto; height: auto;" alt="Tuni Logo">
+            <p class="error-message" v-if="error" style="color: red;">{{ error }}</p>
+            <label :for="`input-${label}-id`" class="input-text">{{ label }}</label>
             <input
             class="input"
             :id="`input-${label}-id`"
@@ -11,14 +13,11 @@
             @keydown.enter="validateInput"
             autocomplete="off"
             />          
-            <!-- <Button
-            @click.native="validateInput"
-            :title="buttonTitle"
-            :is-loading="isLoading"
-            /> -->
-            <button type="button" class="btn btn-custom">Primary</button>
+            
+            <button type="button" class="btn btn-custom"  @click.native="validateInput"      
+           :is-loading="isLoading">{{ buttonTitle }}</button>
 
-            <p class="error-message" v-if="error">{{ error }}</p>
+            
         </div>
    
 </template>
@@ -39,18 +38,78 @@ export default {
       playerPhone:null,
       buttonTitle: "Start Game",
       error: false,
-      phoneno:/^0(7(?:(?:[129][0-9])|(?:0[0-8])|(4[0-1]))[0-9]{6})$/
+      phoneno:/^0(7(?:(?:[129][0-9])|(?:0[0-8])|(4[0-1]))[0-9]{6})$/,
+      logo: '/tuni-logo.gif'
     };
   },
+  mounted()
+  {
+    this.playerPhone =this.playerphone;
+    this.playerName = this.playername;
+    if (this.playername === '')
+    {
+      this.disabled=false;
+    }
+  },
+  computed: {
+    isLoading() {
+      return false;
+    },
+    playername()
+    {
+      return '';
+    },
+    playerphone()
+    {
+      return '';
+    }
+  },
+  methods: {
+    validateInput() {
+      const name = this.playerName;
+      const phone = this.playerPhone; 
+
+      if (name !=='' && !this.isLoading) {
+        localStorage.setItem('playerName', name);
+        localStorage.setItem('playerPhone', phone);        
+        this.registerNewPlayer();
+        }
+      else
+      {
+        this.error = 'Please provide a nickname to proceed!';
+      }
+
+    },
+    registerNewPlayer(){
+        const playerName = localStorage.getItem('playerName');
+        const playerPhone = localStorage.getItem('playerPhone');
+
+        if (playerName) {
+    
+        console.log('Player Name:', playerName);
+        console.log('Player Phone:', playerPhone);
+
+        } else {
+            
+            this.error = 'Player data not found. Please provide a nickname to proceed!';
+        }
+    }
+  }
 }
 </script>
 
 <style>
-/* In a CSS file */
+
 .btn-custom {
   background-color: #93278F;
   color: white;
   text-transform: uppercase;
+  transition: background-color 0.3s; /* Add a smooth transition effect */
+}
+
+/* Hover state */
+.btn-custom:hover {
+  background-color: #93278F; /* Same color as normal state */
 }
   ::placeholder {
     color: rgba(0, 0, 0, 0.38)!important;
@@ -65,6 +124,7 @@ export default {
     color: rgba(0, 0, 0, 0.38)!important;
   }
 </style>
+
 <style lang="sass" scoped>
 @import "../../src/styles/_variable.sass"
 .register-player
@@ -73,6 +133,7 @@ export default {
   justify-content: center
   align-items: center
   text-align: center
+//   margin-top: 200px
 
 .input
   margin: 1rem
@@ -92,8 +153,13 @@ export default {
 
 .input::placeholder
   color: $color-gray--darker
+  text-align: center  
 
 .error-message
   margin-top: 0.5rem
   max-width: 250px
+
+.input-text
+    font-size: 1.6rem 
+
 </style>
