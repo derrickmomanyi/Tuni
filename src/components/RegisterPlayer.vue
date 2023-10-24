@@ -32,116 +32,111 @@ export default {
     
     },
     data() {
-    return {
-      disabled:true,
-      label: "What do we call you?",
-      placeholder: "Nickname",
-      playerName: null,
-      playerPhone:null,
-      buttonTitle: "Start Game",
-      error: false,
-      phoneno:/^0(7(?:(?:[129][0-9])|(?:0[0-8])|(4[0-1]))[0-9]{6})$/,
-      logo: '/tuni-logo.gif',   
-      errorMessage: ''  
-    };
-  },
-  mounted()
-  
-  {
-    this.playerPhone =this.playerphone;
-    this.playerName = this.playername;
-    if (this.playername === '')
-    {
-      this.disabled=false;
-    }
+      return {
+        disabled:true,
+        label: "What do we call you?",
+        placeholder: "Nickname",
+        playerName: null,
+        playerPhone:null,
+        buttonTitle: "Start Game",
+        error: false,
+        phoneno:/^0(7(?:(?:[129][0-9])|(?:0[0-8])|(4[0-1]))[0-9]{6})$/,
+        logo: '/tuni-logo.gif',   
+        errorMessage: ''  
+      };
+    },
+    mounted()  
+      {
+        this.playerPhone =this.playerphone;
+        this.playerName = this.playername;
+        if (this.playername === '')
+        {
+          this.disabled=false;
+        }
 
-       //slowAES
-       let input = data;
-          let encKey = "2fVwX6oZVM75fl5BKUtrgJMPOXM";
-          let inputSplit = input.split(" ");
-          let originalSize = parseInt(inputSplit[0]);
-          let iv = cryptoHelpers.toNumbers(inputSplit[1]);
-          let cipherIn = cryptoHelpers.toNumbers(inputSplit[2]);
+          //slowAES
+          let input = data;
+              let encKey = "2fVwX6oZVM75fl5BKUtrgJMPOXM";
+              let inputSplit = input.split(" ");
+              let originalSize = parseInt(inputSplit[0]);
+              let iv = cryptoHelpers.toNumbers(inputSplit[1]);
+              let cipherIn = cryptoHelpers.toNumbers(inputSplit[2]);
 
-          // Set up encryption parameters
-          let keyAsNumbers = cryptoHelpers.toNumbers( cryptoHelpers.bin2hex( encKey ) );
+              // Set up encryption parameters
+              let keyAsNumbers = cryptoHelpers.toNumbers( cryptoHelpers.bin2hex( encKey ) );
 
-          let decrypted = slowAES.decrypt(
-              cipherIn,
-              slowAES.modeOfOperation.CBC,
-              keyAsNumbers,
-              iv
+              let decrypted = slowAES.decrypt(
+                  cipherIn,
+                  slowAES.modeOfOperation.CBC,
+                  keyAsNumbers,
+                  iv
 
-          );
+              );
 
-          // Byte-array to text
-          let retVal = cryptoHelpers.hex2bin(cryptoHelpers.toHex(decrypted));
-          retVal = cryptoHelpers.decode_utf8(retVal);
-          retVal = JSON.parse(retVal);
-          //
-          console.log(retVal); 
-          this.$store.commit('questions', retVal);     
+              // Byte-array to text
+              let retVal = cryptoHelpers.hex2bin(cryptoHelpers.toHex(decrypted));
+              retVal = cryptoHelpers.decode_utf8(retVal);
+              retVal = JSON.parse(retVal);
+              //
+              console.log(retVal); 
+              this.$store.commit('questions', retVal);     
+              
+
+      },
+    computed: {
+      isLoading() {
+        return false;
+      },
+      playername()
+      {
+        return '';
+      },
+      playerphone()
+      {
+        return '';
+      }
+    },
+    methods: {
+      validateInput() {
+        const name = this.playerName;
+        const phone = this.playerPhone; 
+
+        if (name !=='' && !this.isLoading) {
+          localStorage.setItem('playerName', name);
+          localStorage.setItem('playerPhone', phone);        
+          this.registerNewPlayer();
+          }
+        else
+        {
+        
+          this.$store.commit('flushMessages', 'Please provide a nickname to proceed!');
+          this.errorMessage = this.$store.state.flushMessages;
+          this.error = true;
+                
+        }
+
+      },
+      registerNewPlayer(){
+          const playerName = localStorage.getItem('playerName');
+          
           
 
-  },
-  computed: {
-    isLoading() {
-      return false;
-    },
-    playername()
-    {
-      return '';
-    },
-    playerphone()
-    {
-      return '';
-    }
-  },
-  methods: {
-    validateInput() {
-      const name = this.playerName;
-      const phone = this.playerPhone; 
+          if (playerName) {
+      
+          console.log('Player Name:', playerName);        
 
-      if (name !=='' && !this.isLoading) {
-        localStorage.setItem('playerName', name);
-        localStorage.setItem('playerPhone', phone);        
-        this.registerNewPlayer();
-        }
-      else
-      {
-       
-        this.$store.commit('flushMessages', 'Please provide a nickname to proceed!');
-        this.errorMessage = this.$store.state.flushMessages;
-        this.error = true;
+          this.$router.push({ name: 'trivia'})
+
+          // this.pauseGame(); 
+          // this.playerClickedCard = false; 
+          // this.setResults = false; 
+
+          } else {
               
+              this.error = 'Player data not found. Please provide a nickname to proceed!';
+          }
       }
-
     },
-    registerNewPlayer(){
-        const playerName = localStorage.getItem('playerName');
-        const playerPhone = localStorage.getItem('playerPhone');        
-
-        if (playerName) {
-    
-        console.log('Player Name:', playerName);
-        console.log('Player Phone:', playerPhone);
-
-        this.$router.push({ name: 'trivia'})
-
-        // this.pauseGame(); 
-        // this.playerClickedCard = false; 
-        // this.setResults = false; 
-
-        } else {
-            
-            this.error = 'Player data not found. Please provide a nickname to proceed!';
-        }
-    },
-    setError(){
-      const error = this.$store.state.flushMessages;
-      console.log(error);
-    }
-  },
 }
 </script>
 
