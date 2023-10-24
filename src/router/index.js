@@ -14,12 +14,14 @@ const router = createRouter({
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../components/RegisterPlayer.vue')
+      component: () => import('../components/RegisterPlayer.vue'),
+      props: true
     },
     {
       path: '/trivia',
       name: 'trivia',
-      component: () => import('../components/Trivia.vue')
+      component: () => import('../components/Trivia.vue'),
+      props: true
     }
   ]
 })

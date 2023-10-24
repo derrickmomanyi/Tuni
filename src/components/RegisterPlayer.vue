@@ -2,7 +2,7 @@
     
         <div class="register-player">
             <img :src="logo" style="max-width: 200px; max-height: 139px;  width: auto; height: auto;" alt="Tuni Logo">
-            <p class="error-message" v-if="error" style="color: red;">{{ error }}</p>
+            <p class="error-message" v-if="error" style="color: red;">{{ errorMessage }}</p>
             <label :for="`input-${label}-id`" class="input-text">{{ label }}</label>
             <input
             class="input"
@@ -23,7 +23,9 @@
 </template>
 
 <script>
-
+import { slowAES } from '../../aes';
+import { cryptoHelpers } from '../../cryptoHelpers';
+import { data } from '../../game';
 
 export default {
     components: {
@@ -39,10 +41,12 @@ export default {
       buttonTitle: "Start Game",
       error: false,
       phoneno:/^0(7(?:(?:[129][0-9])|(?:0[0-8])|(4[0-1]))[0-9]{6})$/,
-      logo: '/tuni-logo.gif'
+      logo: '/tuni-logo.gif',   
+      errorMessage: ''  
     };
   },
   mounted()
+  
   {
     this.playerPhone =this.playerphone;
     this.playerName = this.playername;
@@ -50,18 +54,47 @@ export default {
     {
       this.disabled=false;
     }
+
+       //slowAES
+       let input = data;
+          let encKey = "2fVwX6oZVM75fl5BKUtrgJMPOXM";
+          let inputSplit = input.split(" ");
+          let originalSize = parseInt(inputSplit[0]);
+          let iv = cryptoHelpers.toNumbers(inputSplit[1]);
+          let cipherIn = cryptoHelpers.toNumbers(inputSplit[2]);
+
+          // Set up encryption parameters
+          let keyAsNumbers = cryptoHelpers.toNumbers( cryptoHelpers.bin2hex( encKey ) );
+
+          let decrypted = slowAES.decrypt(
+              cipherIn,
+              slowAES.modeOfOperation.CBC,
+              keyAsNumbers,
+              iv
+
+          );
+
+          // Byte-array to text
+          let retVal = cryptoHelpers.hex2bin(cryptoHelpers.toHex(decrypted));
+          retVal = cryptoHelpers.decode_utf8(retVal);
+          retVal = JSON.parse(retVal);
+          //
+          console.log(retVal); 
+          this.$store.commit('questions', retVal);     
+          
+
   },
   computed: {
     isLoading() {
-      return this.$store.state.isLoading;
+      return false;
     },
     playername()
     {
-      return this.$store.state.scores.playerOne.name;
+      return '';
     },
     playerphone()
     {
-      return this.$store.state.scores.playerOne.phone;
+      return '';
     }
   },
   methods: {
@@ -76,29 +109,39 @@ export default {
         }
       else
       {
-        this.error = 'Please provide a nickname to proceed!';
+       
+        this.$store.commit('flushMessages', 'Please provide a nickname to proceed!');
+        this.errorMessage = this.$store.state.flushMessages;
+        this.error = true;
+              
       }
 
     },
     registerNewPlayer(){
         const playerName = localStorage.getItem('playerName');
-        const playerPhone = localStorage.getItem('playerPhone');
+        const playerPhone = localStorage.getItem('playerPhone');        
 
         if (playerName) {
     
         console.log('Player Name:', playerName);
         console.log('Player Phone:', playerPhone);
 
-        this.pauseGame(); 
-        this.playerClickedCard = false; 
-        this.setResults = false; 
+        this.$router.push({ name: 'trivia'})
+
+        // this.pauseGame(); 
+        // this.playerClickedCard = false; 
+        // this.setResults = false; 
 
         } else {
             
             this.error = 'Player data not found. Please provide a nickname to proceed!';
         }
+    },
+    setError(){
+      const error = this.$store.state.flushMessages;
+      console.log(error);
     }
-  }
+  },
 }
 </script>
 
