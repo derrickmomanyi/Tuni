@@ -7,10 +7,10 @@
                 <h3 class="counter" style="font-weight: 600;font-size: 0.6em;">{{nowTime}}</h3>
             </div>
         </div>
-        <!-- <div class="progress label">{{(round+1)+'/'+questions.length}}</div> -->
-        <!-- <div class="question">
+        <div class="progress label">{{(round+1)+'/'+questions.length}}</div>
+        <div class="question">
             <template >
-                <question-image
+                <QuestionImage
                 :asset="question_image"
                 />
                 <h1
@@ -29,7 +29,14 @@
                 <div class="shape shape-3"></div>
                 <div class="shape shape-4"></div>
             </div>
-        </div> -->
+
+            <!-- <QuestionChoices v-if="multi_choice"
+            :countDown="countDown"
+            :choices="choices"
+            :is-answer-submitted="isAnswerSubmitted"
+            @answered="setPlayerClickedCard"
+            /> -->
+        </div>
     </div>
 </template>
 
@@ -43,8 +50,14 @@
 // import OpenEnded from "./question/OpenEnded";
 import axios from 'axios';
 import {TweenMax,Power0} from 'gsap';
+import QuestionChoices from './questions/QuestionChoices.vue';
+import { htmlEntity } from '../../htmlEntityMixin';
+import QuestionImage from './questions/QuestionImage.vue';
 export default{   
-
+    mixins: [htmlEntity],
+    components: {
+        QuestionChoices, QuestionImage
+    },
     data() {
         return {
         multi_choice:false,
@@ -76,6 +89,7 @@ export default{
         let question = this.$store.state.questions[round];
         //  console.log(question)
         //  console.log(question.type)
+        
         
         if (question.type === 'poll' ||question.type === 'Poll')
         {
@@ -303,6 +317,8 @@ export default{
   @media screen and (max-height: 569px)
     grid-template-rows: min-content  minmax(100px, 200px) 1fr
 
+.progress
+  margin-top: 10px
 .question
   display: grid
   grid-template-rows: 1fr min-content
