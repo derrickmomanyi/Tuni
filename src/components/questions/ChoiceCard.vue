@@ -44,8 +44,7 @@
 <script>
 import { htmlEntity } from '../../../htmlEntityMixin';
 export default{
-    mixins: [htmlEntity],
-    mixins:[htmlEntity],
+    mixins: [htmlEntity],    
   props: {
     answerClass:{
         type: Object,

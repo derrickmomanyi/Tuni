@@ -1,6 +1,5 @@
 <template>
-    <div>       
-    </div>
+    
     <div class="question-card">        
         <div id="progressBar" v-if="!timer">
             <div :style="{'width' : (currentPercent*100) + '%'}">
@@ -8,21 +7,22 @@
             </div>
         </div>
         <div class="progress label">{{(round+1)+'/'+questions.length}}</div>
+        <!-- <h1>Question Image</h1> -->
         <div class="question">
-            <template >
-                <QuestionImage
-                :asset="question_image"
-                />
-                <h1
-                class="title"
-                :class="{
-                    'title-long': decodedQuestion.split('').length > 80,
-                    'title-with-image': true
-                }"
-                >
-                {{decodedQuestion}}
-                </h1>
-            </template>
+                     
+            <QuestionImage
+            :asset="question_image"
+            />
+            <h1
+            class="title"
+            :class="{
+                'title-long': decodedQuestion.split('').length > 80,
+                'title-with-image': true
+            }"
+            >
+            {{decodedQuestion}}
+            </h1> 
+            
             <div class="container" v-if="playerClickedCard">
                 <div class="shape shape-1"></div>
                 <div class="shape shape-2"></div>
@@ -41,13 +41,10 @@
 </template>
 
 <script>
-// import { htmlEntity } from '.././htmlEntityMixin';
-// import QuestionImage from "./question/QuestionImage";
-// import QuestionChoices from "./question/QuestionChoices";
-// import {TweenMax,Power0} from 'gsap';
-// import PollChoices from "./question/PollChoices";
-// import emoji from "./question/emoji";
+
 // import OpenEnded from "./question/OpenEnded";
+import PollChoices from './questions/PollChoices.vue'
+import emoji from './questions/emoji.vue';
 import axios from 'axios';
 import {TweenMax,Power0} from 'gsap';
 import QuestionChoices from './questions/QuestionChoices.vue';
@@ -56,7 +53,7 @@ import QuestionImage from './questions/QuestionImage.vue';
 export default{   
     mixins: [htmlEntity],
     components: {
-        QuestionChoices, QuestionImage
+        QuestionChoices, QuestionImage, emoji, PollChoices
     },
     data() {
         return {
@@ -88,7 +85,7 @@ export default{
         let round = this.$store.getters.round;  
         let question = this.$store.state.questions[round];
         //  console.log(question)
-        //  console.log(question.type)
+        //  console.log(question.choices)       
         
         
         if (question.type === 'poll' ||question.type === 'Poll')
@@ -317,8 +314,8 @@ export default{
   @media screen and (max-height: 569px)
     grid-template-rows: min-content  minmax(100px, 200px) 1fr
 
-.progress
-  margin-top: 10px
+// .progress
+//   margin-top: 10px
 .question
   display: grid
   grid-template-rows: 1fr min-content
