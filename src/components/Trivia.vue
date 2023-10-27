@@ -84,8 +84,9 @@ export default{
         window.scrollTo(0,0);
         let round = this.$store.getters.round;  
         let question = this.$store.state.questions[round];
-        //  console.log(question)
-        //  console.log(question.choices)       
+         console.log(question)
+        //  console.log(question.choices) 
+
         
         
         if (question.type === 'poll' ||question.type === 'Poll')
